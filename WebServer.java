@@ -72,6 +72,9 @@ final class HttpRequest implements Runnable
         }
     }
 
+
+
+
     // Process a HTTP request
     private void processRequest() throws Exception 
     {
@@ -90,9 +93,11 @@ final class HttpRequest implements Runnable
             response = processGET(requestLine,br);
         } else if (requestLine.startsWith("HEAD")) {
             response = "HEAD!!";//processHEAD(requestLine,br);
+        } else if (requestLine.startsWith"POST") {
+            response = generateFail(501);
         } else {
-            response = "Fail.";
-        } // TODO: Not implemented for POST. parse other errors
+            response = generateFail(400);
+        }
 
         // Close streams and sockets
         outs.close();
@@ -102,10 +107,10 @@ final class HttpRequest implements Runnable
 
     private String processGET(String rl, BufferedReader br) {
         String[] list = rl.split(" ");
-        if (list.length != 3) {
-            return generateFail(400);
-        }
-        return null;
+        if (list.length != 3) generateFail(400);
+        list[1].startsWith()
+
+        // TODO !=====================================================!
     }
 
     private String generateFail(int status) {
@@ -123,6 +128,11 @@ final class HttpRequest implements Runnable
     private String getDate() {
         return "29 maj";
     }
+
+
+
+
+
     private static void sendBytes(FileInputStream  fins,
       OutputStream     outs) throws Exception
     {
