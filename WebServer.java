@@ -90,10 +90,10 @@ final class HttpRequest implements Runnable
         String response;
 
         if (requestLine.startsWith("GET")) {
-            response = processGET(requestLine);
+            response = processGET(requestLine,br);
         } else if (requestLine.startsWith("HEAD")) {
-            response = processHEAD(requestLine);
-        } else if (requestLine.startsWith("POST")) {
+            response = "HEAD!!";//processHEAD(requestLine,br);
+        } else if (requestLine.startsWith"POST") {
             response = generateFail(501);
         } else {
             response = generateFail(400);
@@ -105,37 +105,12 @@ final class HttpRequest implements Runnable
         socket.close();
     }
 
-    private String processGET(String rl) {
-    	String head = processHEAD(rl);
-    	return head + readFile(rl.split(" ")[1]) + CRLF;
-    }
-
-    private String processHEAD(String rl) {
+    private String processGET(String rl, BufferedReader br) {
         String[] list = rl.split(" ");
-        if (list.length != 3) return generateFail(400);
-        if (!list[1].startsWith("/")) return generateFail(400);
-        if ((list[1]).equals("/")) list[1] = "/index.html";
-		File file; 
-        try {
-        	file = new File(list[1]);
-        } catch (NullPointerException e) {
-        	return generateFail(404);
+        if (list.length != 3) generateFail(400);
+        list[1].startsWith()
 
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append("HTTP/1.0 200 OK"); 	 				sb.append(CRLF);
-        sb.append(getDate(System.currentTimeMillis())); sb.append(CRLF);
-        sb.append("Server: servername"); 				sb.append(CRLF);
-        sb.append("Last-Modified: ");
-        sb.append(getDate(file.lastModified()));		sb.append(CRLF);
-        sb.append("Content-Length: ");
-        sb.append(file.length());						sb.append(CRLF);
-        sb.append("Content-Type: ");
-        sb.append(contentType(list[1]));				sb.append(CRLF);
-       	sb.append(CRLF);
-
-       	return sb.toString();
-
+        // TODO !=====================================================!
     }
 
     private String generateFail(int status) {
@@ -147,13 +122,18 @@ final class HttpRequest implements Runnable
             case 501: message += "501 Not Implemented"; break;
             default: message += "-1 Error Not Found "; break;
         }
-        return message + CRLF + getDate(System.currentTimeMillis());
+        return (message + CRLF + getDate());
     }
 
-    private String getDate(long time) {
+    private String getDate() {
         return "29 maj";
     }
 
+    private String readFile(String path) {
+        byte[] fileAsText = Files.readAllBytes(Paths.get(path));
+        String string = new String(fileAsText, Charset.deafultCharset());
+        return string;
+    }
 
 
 
