@@ -33,8 +33,8 @@ public final class WebServerTest
             System.exit(0);
         }
 
- /*       System.out.println("-----------------------------------------------");
-        System.out.println("Testing methods on valid resource");*/
+        System.out.println("-----------------------------------------------");
+        System.out.println("Testing methods on valid resource");
         System.out.println("-----------------------------------------------");
         Tests.httpRequest(host, port,
           Tests.HTTP_METHOD.GET, "/index.html");
@@ -42,7 +42,7 @@ public final class WebServerTest
         Tests.httpRequest(host, port,
           Tests.HTTP_METHOD.HEAD, "/index.html");
         System.out.println("-----------------------------------------------");
-       /* Tests.httpRequest(host, port,
+        Tests.httpRequest(host, port,
           "POST", "/index.html");
         System.out.println("-----------------------------------------------");
         Tests.httpRequest(host, port,
@@ -140,7 +140,7 @@ public final class WebServerTest
           Tests.HTTP_METHOD.GET,
           "/index.html",
           "If-Modified-Since: Mon, 12 Jul 2006 10:19:04 GMT");
-*/
+
 
 
         System.out.println("-----------------------------------------------");

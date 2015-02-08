@@ -8,6 +8,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.net.InetAddress.*;
+import java.nio.file.*;
+import java.nio.charset.*;
+import java.text.*;
 
 public final class WebServer
 {
@@ -73,8 +76,8 @@ final class HttpRequest implements Runnable
     }
 
 
-
-
+// ============== START OF OUR CODE ============
+    
     // Process a HTTP request
     private void processRequest() throws Exception 
     {
@@ -99,45 +102,56 @@ final class HttpRequest implements Runnable
             response = generateFail(400);
         }
 
+        outs.writeBytes(response);
         // Close streams and sockets
         outs.close();
         br.close();
         socket.close();
     }
 
+    // Processing the GET method, with som help from processHEAD
     private String processGET(String rl) {
     	String head = processHEAD(rl);
+    	// In case of error
+    	if (head.contains("HTTP/1.0 4") || head.startsWith("HTTP/1.0 5")) {
+    		return head;
+    	}
     	return head + readFile(rl.split(" ")[1]) + CRLF;
     }
 
+    // Processing the HEAD method
     private String processHEAD(String rl) {
         String[] list = rl.split(" ");
         if (list.length != 3) return generateFail(400);
         if (!list[1].startsWith("/")) return generateFail(400);
         if ((list[1]).equals("/")) list[1] = "/index.html";
-		File file; 
+
+		File file;
         try {
         	file = new File(list[1]);
         } catch (NullPointerException e) {
-        	return generateFail(404);
-
+        	return generateFail(400);
         }
+
+        if (!file.canRead()) return generateFail(404);
+
         StringBuilder sb = new StringBuilder();
-        sb.append("HTTP/1.0 200 OK"); 	 				sb.append(CRLF);
+        sb.append("HTTP/1.0 200 OK");                   sb.append(CRLF);
         sb.append(getDate(System.currentTimeMillis())); sb.append(CRLF);
-        sb.append("Server: servername"); 				sb.append(CRLF);
+        sb.append("Server: servername");                sb.append(CRLF);
         sb.append("Last-Modified: ");
-        sb.append(getDate(file.lastModified()));		sb.append(CRLF);
+        sb.append(getDate(file.lastModified()));        sb.append(CRLF);
         sb.append("Content-Length: ");
-        sb.append(file.length());						sb.append(CRLF);
+        sb.append(file.length());                       sb.append(CRLF);
         sb.append("Content-Type: ");
-        sb.append(contentType(list[1]));				sb.append(CRLF);
+        sb.append(contentType(list[1]));                sb.append(CRLF);
        	sb.append(CRLF);
 
        	return sb.toString();
 
     }
 
+    // generates a failure string
     private String generateFail(int status) {
         String message = HTTPVERSION + " ";
         switch (status) {
@@ -150,15 +164,26 @@ final class HttpRequest implements Runnable
         return message + CRLF + getDate(System.currentTimeMillis());
     }
 
+    // generates a date string from a long
     private String getDate(long time) {
-        return "29 maj";
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
+        Date resultdate = new Date(time);
+        return "Date: " + sdf.format(resultdate);
     }
 
+    // Reads file content from the filesystem
 	private String readFile(String path) {
-        byte[] fileAsText = Files.readAllBytes(Paths.get(path));
-        String string = new String(fileAsText, Charset.deafultCharset());
+		byte[] fileAsText;
+		try {
+		    fileAsText = Files.readAllBytes(Paths.get(path));
+		} catch (IOException e) {
+			return generateFail(404);
+		}
+		String string = new String(fileAsText, Charset.defaultCharset());
         return string;
     }
+
+// ================ END OF OUR CODE ======================
 
 
     private static void sendBytes(FileInputStream  fins,
@@ -187,4 +212,3 @@ final class HttpRequest implements Runnable
     }
 }
 }
-
