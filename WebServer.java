@@ -154,8 +154,11 @@ final class HttpRequest implements Runnable
         return "29 maj";
     }
 
-
-
+	private String readFile(String path) {
+        byte[] fileAsText = Files.readAllBytes(Paths.get(path));
+        String string = new String(fileAsText, Charset.deafultCharset());
+        return string;
+    }
 
 
     private static void sendBytes(FileInputStream  fins,
