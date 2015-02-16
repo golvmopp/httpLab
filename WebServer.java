@@ -79,6 +79,13 @@ final class HttpRequest implements Runnable
 // ============== START OF OUR CODE ============
     
     // Process a HTTP request
+	/**
+	 * Processes an incoming http request.
+	 * <p>
+	 * This method processes requests of the GET and HEAD form. 
+	 * It then writes a response to the appropriate output stream.
+	 * It does not process POST requests nor conditional GET.
+	 */
     private void processRequest() throws Exception 
     {
         // Get the input and output streams of the socket.
@@ -109,7 +116,15 @@ final class HttpRequest implements Runnable
         socket.close();
     }
 
-    // Processing the GET method, with som help from processHEAD
+	/**
+	 * Processes a GET request and generates a response.
+	 * <p>
+	 * This method processes an http GET request and generates and returns a response string.
+	 * It uses the @processHEAD method to generate the status and header lines and then adds the data to the response.
+	 *
+	 * @param rl	The request line to be processed
+	 * @return 		An http response
+	 */
     private String processGET(String rl) {
     	String head = processHEAD(rl);
     	// In case of error
@@ -119,7 +134,15 @@ final class HttpRequest implements Runnable
     	return head + readFile(rl.split(" ")[1]) + CRLF;
     }
 
-    // Processing the HEAD method
+	/**
+	 * Processes a HEAD request and generates a response.
+	 * <p>
+	 * This method processes an http HEAD request and generates and returns a response string.
+	 * The return string contains a status line and header lines.
+	 *
+	 * @param rl	The request line to be processed
+	 * @return		An http response containing the status line and header lines
+	 */
     private String processHEAD(String rl) {
         String[] list = rl.split(" ");
         if (list.length != 3) return generateFail(400);
@@ -152,6 +175,12 @@ final class HttpRequest implements Runnable
     }
 
     // generates a failure string
+	/**
+	 * Generates a failure string of standard form.
+	 * 
+	 * @param status	The error code
+	 * @return			A string containing the error message
+	 */
     private String generateFail(int status) {
         String message = HTTPVERSION + " ";
         switch (status) {
@@ -165,6 +194,12 @@ final class HttpRequest implements Runnable
     }
 
     // generates a date string from a long
+	/**
+	 * Generates a string with a given date on standard form.
+	 * 
+	 * @param time	The date
+	 * @return		A string containing the formatted date
+	 */
     private String getDate(long time) {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
         Date resultdate = new Date(time);
@@ -172,6 +207,12 @@ final class HttpRequest implements Runnable
     }
 
     // Reads file content from the filesystem
+	/**
+	 * Reads a file to a string.
+	 * 
+	 * @param path	The path to the file
+	 * @return		A string with the data of the file written to it
+	 */
 	private String readFile(String path) {
 		byte[] fileAsText;
 		try {
